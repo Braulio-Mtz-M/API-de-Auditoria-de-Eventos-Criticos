@@ -1,4 +1,18 @@
+const jwt = require('jsonwebtoken');
 const AuditLog = require('../models/auditoria');
+
+const login = (req, res) => {
+    const { usuario, password } = req.body;
+
+    // Validamos contra las variables de entorno
+    if (usuario === process.env.ADMIN_USER && password === process.env.ADMIN_PASSWORD) {
+        // Generamos el token sin caducidad
+        const token = jwt.sign({ rol: 'admin' }, process.env.JWT_SECRET);
+        return res.json({ mensaje: 'Login de auditoría exitoso', token });
+    }
+
+    return res.status(401).json({ error: 'Credenciales inválidas' });
+};
 
 const crearAuditoria = async (req, res) => {
     try {
@@ -38,4 +52,4 @@ const eliminarAuditoria = async (req, res) => {
     }
 };
 
-module.exports = { crearAuditoria, obtenerAuditorias, actualizarAuditoria, eliminarAuditoria };
+module.exports = { login, crearAuditoria, obtenerAuditorias, actualizarAuditoria, eliminarAuditoria };
